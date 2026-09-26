@@ -10,10 +10,13 @@ import org.springframework.util.StringUtils;
 import com.leveling.core_system.data.dto.CreatePlayerRq;
 import com.leveling.core_system.data.dto.CreatePlayerRs;
 import com.leveling.core_system.data.dto.GetPlayerRs;
+import com.leveling.core_system.data.dto.LoginRq;
+import com.leveling.core_system.data.dto.LoginRs;
 import com.leveling.core_system.data.dto.UpdatePasswordRq;
 import com.leveling.core_system.data.entity.Player;
 import com.leveling.core_system.data.exception.ApiException;
 import com.leveling.core_system.repository.PlayerRepository;
+import com.leveling.core_system.usecase.JwtUsecase;
 import com.leveling.core_system.usecase.PlayerUsecase;
 
 import lombok.AllArgsConstructor;
@@ -24,6 +27,7 @@ public class PlayerUsecaseImpl implements PlayerUsecase{
 
     private final PlayerRepository playerRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUsecase jwtUsecase;
 
     @Override
     public CreatePlayerRs createPlayer(CreatePlayerRq player) {
@@ -99,6 +103,27 @@ public class PlayerUsecaseImpl implements PlayerUsecase{
         
         getPlayer.setActive(false);
         playerRepository.save(getPlayer);
+    }
+
+    @Override
+    public LoginRs login(LoginRq loginRq) {
+        
+        Player getPlayer = playerRepository.findActivePlayerByUsername(loginRq.getUsername())
+            .orElseThrow(() -> new ApiException("Username or password is wrong!", HttpStatus.UNAUTHORIZED));
+        
+        boolean isPasswordMatcb = passwordEncoder.matches(loginRq.getPassword(), getPlayer.getPassword());
+        
+        if(!isPasswordMatcb){
+            throw new ApiException("Username or password is wrong!", HttpStatus.UNAUTHORIZED);
+        }
+
+        String token = jwtUsecase.generateToken(getPlayer.getId(), getPlayer.getUsername());
+
+        return LoginRs.builder()
+            .playerId(getPlayer.getId())
+            .username(getPlayer.getUsername())
+            .token(token)
+            .build();
     }
     
 }
