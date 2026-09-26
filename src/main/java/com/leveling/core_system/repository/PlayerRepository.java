@@ -18,4 +18,7 @@ public interface PlayerRepository extends JpaRepository<Player, UUID>{
 
     @Query(value = "SELECT * FROM players WHERE id = :id AND active = true", nativeQuery = true)
     Optional<Player> findActivePlayerById(@Param("id") UUID id);
+
+    @Query(value = "SELECT * FROM players WHERE username = :username AND active = true", nativeQuery = true)
+    Optional<Player> findActivePlayerByUsername(@Param("username") String username);
 }

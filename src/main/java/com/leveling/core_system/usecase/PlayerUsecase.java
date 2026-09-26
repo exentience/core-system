@@ -5,6 +5,8 @@ import java.util.UUID;
 import com.leveling.core_system.data.dto.CreatePlayerRq;
 import com.leveling.core_system.data.dto.CreatePlayerRs;
 import com.leveling.core_system.data.dto.GetPlayerRs;
+import com.leveling.core_system.data.dto.LoginRq;
+import com.leveling.core_system.data.dto.LoginRs;
 import com.leveling.core_system.data.dto.UpdatePasswordRq;
 
 public interface PlayerUsecase {
@@ -16,5 +18,7 @@ public interface PlayerUsecase {
     public void updatePasswordById(UUID id, UpdatePasswordRq updatePasswordRq);
 
     public void deletePlayerById(UUID id);
+
+    public LoginRs login(LoginRq loginRq);
     
 }

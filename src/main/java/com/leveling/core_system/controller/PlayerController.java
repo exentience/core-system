@@ -17,6 +17,8 @@ import com.leveling.core_system.data.dto.ApiResponse;
 import com.leveling.core_system.data.dto.CreatePlayerRq;
 import com.leveling.core_system.data.dto.CreatePlayerRs;
 import com.leveling.core_system.data.dto.GetPlayerRs;
+import com.leveling.core_system.data.dto.LoginRq;
+import com.leveling.core_system.data.dto.LoginRs;
 import com.leveling.core_system.data.dto.UpdatePasswordRq;
 import com.leveling.core_system.usecase.PlayerUsecase;
 
@@ -28,6 +30,20 @@ import lombok.AllArgsConstructor;
 public class PlayerController {
     
     private final PlayerUsecase playerUsecase;
+
+    @PostMapping("/login")
+    public ResponseEntity<ApiResponse<LoginRs>> login(@RequestBody LoginRq request){
+
+        LoginRs result = playerUsecase.login(request);
+
+        ApiResponse<LoginRs> response = ApiResponse.<LoginRs>builder()
+            .success(true)
+            .message("Login Success")
+            .data(result)
+            .build();
+
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
 
     @PostMapping
     public ResponseEntity<ApiResponse<CreatePlayerRs>> createPlayer(@RequestBody CreatePlayerRq dto){
